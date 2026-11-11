@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>语迹 WorkMemo AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark">语</div>
+        <div>
+          <strong>语迹</strong>
+          <span>WorkMemo AI</span>
+        </div>
+      </div>
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="desk" title="工作台">⌂<span>工作台</span></button>
+        <button class="nav-item" data-view="memory" title="记忆库">▣<span>记忆库</span></button>
+        <button class="nav-item" data-view="ask" title="查找">⌕<span>查找</span></button>
+        <button class="nav-item" data-view="settings" title="设置">⚙<span>设置</span></button>
+      </nav>
+      <div class="storage-note">
+        <span>本地优先</span>
+        <strong>3 条样例记录</strong>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">AI 工作记录与工作记忆系统</p>
+          <h1 id="pageTitle">工作台</h1>
+        </div>
+        <div class="top-actions">
+          <input class="global-search" placeholder="搜索记录、客户、项目">
+          <button class="icon-button" id="searchButton" title="搜索">⌕</button>
+          <button class="primary-button" data-view="record">开始记录</button>
+        </div>
+      </section>
+
+      <section class="view active" id="desk">
+        <div class="hero-panel">
+          <div>
+            <p class="eyebrow">今天 06/09</p>
+            <h2>工作记录工作台</h2>
+            <p>记录沟通、生成结构化结果，并沉淀到可追溯的工作记忆库。</p>
+          </div>
+          <div class="quick-actions">
+            <button class="primary-button" data-view="record" data-mode="recording">开始录音</button>
+            <button class="secondary-button" data-view="record" data-mode="upload">上传音频</button>
+            <button class="secondary-button" data-view="record" data-mode="text">文本输入</button>
+          </div>
+        </div>
+
+        <div class="scene-grid" id="sceneGrid"></div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>今日待整理</h2>
+              <span class="count-badge" id="pendingCount">0</span>
+            </div>
+            <div class="task-list" id="pendingList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>本周摘要</h2>
+              <button class="text-button" data-view="ask">查找记录</button>
+            </div>
+            <div class="metric-row">
+              <div><strong id="metricRecords">0</strong><span>沟通记录</span></div>
+              <div><strong id="metricReports">0</strong><span>报告草稿</span></div>
+              <div><strong id="metricRisks">0</strong><span>项目风险</span></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="record">
+        <div class="record-step active" id="recordSetupStep">
+          <section class="panel record-panel setup-panel">
+            <div class="panel-head">
+              <h2>新建工作记录</h2>
+              <span class="status-pill">第 1 步 / 配置</span>
+            </div>
+            <div class="mode-tabs" role="tablist">
+              <button class="active" data-input="recording">录音</button>
+              <button data-input="upload">上传</button>
+              <button data-input="text">文本</button>
+            </div>
+            <label class="field-label">场景模板</label>
+            <select id="sceneSelect"></select>
+            <label class="field-label">记录标题</label>
+            <input id="recordTitleInput" placeholder="例如：客户 A 拜访 / 视频项目例会">
+            <label class="field-label">音频文件</label>
+            <input id="audioInput" type="file" accept="audio/*">
+            <div class="mic-tools">
+              <button class="secondary-button" id="checkMic" type="button">检测麦克风</button>
+              <select id="micDeviceSelect" aria-label="选择麦克风">
+                <option value="">默认麦克风</option>
+              </select>
+            </div>
+            <div class="mic-status" id="micStatus">麦克风状态：尚未检测</div>
+            <div class="notice">
+              <strong>录音告知</strong>
+              <span>请确认你已获得相关参与者同意，并遵守所在地区和组织的录音、隐私与数据管理要求。</span>
+              <label class="checkbox-row"><input id="consentInput" type="checkbox"> 我确认已获得相关参与者同意</label>
+            </div>
+            <div class="setup-actions">
+              <button class="primary-button" id="enterRecorder">进入录入</button>
+              <button class="secondary-button" data-view="desk">返回工作台</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="record-step" id="recordWorkStep">
+          <section class="panel record-toolbar">
+            <div>
+              <p class="eyebrow" id="recordWorkScene">项目会议</p>
+              <h2 id="recordWorkTitle">未命名记录</h2>
+            </div>
+            <div class="top-actions">
+              <button class="secondary-button" id="backToSetup">返回修改配置</button>
+              <span class="status-pill" id="recordStatus">未开始</span>
+            </div>
+          </section>
+
+          <div class="record-layout">
+            <section class="panel record-panel">
+              <div class="panel-head">
+                <h2 id="recordWorkMode">语音录入</h2>
+              </div>
+            <div class="recorder-face">
+              <div class="timer" id="timer">00:00:00</div>
+              <div class="pulse-dot"></div>
+              <span id="recordHint">准备记录</span>
+              <small id="speechHint">语音识别：等待检测</small>
+            </div>
+            <div class="record-actions">
+              <button class="primary-button" id="startRecord">开始录音</button>
+              <button class="secondary-button" id="pauseRecord" disabled>暂停</button>
+              <button class="secondary-button" id="resumeRecord" disabled>继续</button>
+              <button class="secondary-button" id="markPoint">标记重点</button>
+              <button class="secondary-button" id="stopRecord" disabled>结束录音</button>
+              <button class="primary-button" id="finishRecord">生成结构化结果</button>
+            </div>
+            <div class="speaker-control">
+              <span>说话人识别</span>
+              <strong id="activeSpeakerLabel">结束后自动分人</strong>
+            </div>
+            <div class="audio-preview" id="audioPreview">
+              <div>
+                <strong>当前录音</strong>
+                <span id="audioMeta">暂无录音文件</span>
+              </div>
+              <audio id="audioPlayer" controls></audio>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>实时转写</h2>
+              <span class="status-pill" id="liveTranscriptStatus">等待开始</span>
+            </div>
+            <div class="live-transcript" id="liveTranscript">
+              <p class="empty">开始录音后，说话内容会实时显示在这里。</p>
+            </div>
+            <label class="field-label">可编辑转写文本</label>
+            <textarea id="noteInput" placeholder="实时转写会自动写入这里；也可以手动输入或粘贴沟通内容。"></textarea>
+            <div class="tag-row" id="liveTags">
+              <span>客户 A</span>
+              <span>预算疑问</span>
+              <span>素材延期</span>
+            </div>
+          </section>
+        </div>
+          <section class="panel audio-library">
+            <div class="panel-head">
+              <h2>语音录入库</h2>
+              <button class="text-button" id="refreshAudioLibrary">刷新</button>
+            </div>
+            <div class="audio-list" id="audioList"></div>
+          </section>
+        </div>
+        <section class="panel process-panel" id="processPanel">
+          <div class="panel-head">
+            <h2>处理进度</h2>
+            <button class="text-button" id="viewResult">查看结果</button>
+          </div>
+          <div class="step-list" id="stepList"></div>
+        </section>
+      </section>
+
+      <section class="view" id="result">
+        <section class="panel result-header">
+          <div>
+            <p class="eyebrow" id="resultType">项目会议记录</p>
+            <h2 id="resultTitle">视频项目例会 · 结构化结果</h2>
+          </div>
+          <div class="top-actions">
+            <button class="secondary-button" id="backFromResult">返回</button>
+            <button class="secondary-button" id="saveMemory">查看记忆库</button>
+            <button class="secondary-button" id="exportResult">导出</button>
+            <button class="secondary-button" id="rerunAiAnalysis">重新 AI 纠错并总结</button>
+            <button class="primary-button" data-view="ask">继续追问</button>
+          </div>
+        </section>
+        <div class="result-grid">
+          <article class="panel result-pane">
+            <div class="panel-head">
+              <h2>原文</h2>
+              <div class="top-actions">
+                <span class="status-pill" id="aiProcessStatus">待 AI 处理</span>
+              </div>
+            </div>
+            <div class="source-list" id="sourceList"></div>
+          </article>
+          <article class="panel result-pane">
+            <div class="panel-head">
+              <h2>分析</h2>
+              <span class="status-pill" id="templateName">通用模板</span>
+            </div>
+            <article class="analysis-document" id="analysisDocument"></article>
+            <textarea id="reportText" class="hidden-report-text" aria-hidden="true"></textarea>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="memory">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>工作记忆库</h2>
+            <input class="search-input" id="memorySearch" placeholder="搜索客户、项目、关键词">
+          </div>
+          <div class="memory-list" id="memoryList"></div>
+        </section>
+      </section>
+
+      <section class="view" id="ask">
+        <section class="panel ask-panel">
+          <h2>查找工作记录</h2>
+          <div class="prompt-chips">
+            <button>上周我和客户 A 聊了什么？</button>
+            <button>视频项目最大的风险是什么？</button>
+            <button>帮我生成本周周报</button>
+            <button>最近创意讨论最多的关键词？</button>
+          </div>
+          <div class="ask-box">
+            <input id="askInput" placeholder="输入问题">
+            <button class="primary-button" id="askButton">提问</button>
+          </div>
+          <div class="answer-box" id="answerBox">
+            <strong>回答会显示在这里</strong>
+            <p>系统会基于已保存记录回答，并列出来源记录。</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="settings">
+        <section class="panel settings-grid">
+          <article>
+            <h2>隐私与录音告知</h2>
+            <p>录音前强提醒，保存前展示数据用途，导出前提醒人工确认。</p>
+            <label><input type="checkbox" checked> 每次录音前确认授权</label>
+          </article>
+          <article>
+            <h2>本地存储</h2>
+            <p>默认保存在当前设备，云端同步作为后续可选能力。</p>
+            <label><input type="checkbox" checked> 本地优先保存</label>
+          </article>
+          <article>
+            <h2>敏感记录</h2>
+            <p>敏感记录默认不进入周报，不参与团队共享。</p>
+            <label><input type="checkbox"> 当前记录标记为敏感</label>
+          </article>
+          <article>
+            <h2>数据删除</h2>
+            <p>删除记录先进入回收站，后续支持彻底删除证明。</p>
+            <button class="danger-button" id="clearData">清空本地数据</button>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

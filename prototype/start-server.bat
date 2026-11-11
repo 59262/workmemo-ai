@@ -1,0 +1,5 @@
+@echo off
+echo Starting WorkMemo local server...
+echo URL: http://localhost:5173/
+powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand UwBlAHQALQBMAG8AYwBhAHQAaQBvAG4AIAAnAEUAOgBcAEEAaQAaT66Lqn6BiVwAcAByAG8AdABvAHQAeQBwAGUAJwA7ACAAJgAgACcAQwA6AFwAUAByAG8AZwByAGEAbQAgAEYAaQBsAGUAcwBcAFAAeQB0AGgAbwBuADMAMQA0AFwAcAB5AHQAaABvAG4ALgBlAHgAZQAnACAAJwBFADoAXABBAGkAGk+ui6p+gYlcAHAAcgBvAHQAbwB0AHkAcABlAFwAcwBlAHIAdgBlAHIALgBwAHkAJwA=
+pause
